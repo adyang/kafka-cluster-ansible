@@ -55,7 +55,7 @@
       failed_when: zookeeper_process.rc >= 2
     - name: start zookeeper
       shell: >
-        LOG_DIR='{{ log_dir }}'
+        LOG_DIR='{{ log_dir }}/zookeeper'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
         {{ confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
       when: zookeeper_process.stdout_lines | length == 0
@@ -75,7 +75,7 @@
       failed_when: kafka_process.rc >= 2
     - name: start kafka
       shell: >
-        LOG_DIR='{{ log_dir }}'
+        LOG_DIR='{{ log_dir }}/kafka'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/kafka-log4j.properties'
         {{ confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties
       when: kafka_process.stdout_lines | length == 0
