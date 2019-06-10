@@ -1,0 +1,61 @@
+---
+
+- hosts: kafka
+  vars:
+    user_home: /home/vagrant
+    downloads_dir: "{{ user_home }}/downloads"
+    confluent_version: 5.2.1
+    confluent_archive: "confluent-{{ confluent_version }}-2.12.tar.gz"
+    confluent_dir: "{{ user_home }}/confluent-{{ confluent_version }}"
+    config_dir: "{{ user_home }}/config"
+    log_dir: "{{ user_home }}/logs"
+    zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
+  tasks:
+    - name: ensure downloads directory exists
+      file:
+        path: "{{ downloads_dir }}"
+        state: directory
+    - name: download confluent platform
+      get_url:
+        url: "http://packages.confluent.io/archive/5.2/{{ confluent_archive }}"
+        dest: "{{ downloads_dir }}/{{ confluent_archive }}"
+        checksum: sha256:11fdcc557aca782e87352ed6e655c37c71fb7b3a003796ee956970b01dedbbb1
+        timeout: 30
+    - name: unarchive confluent platform
+      unarchive:
+        src: "{{ downloads_dir }}/{{ confluent_archive }}"
+        dest: "{{ user_home }}"
+        creates: "{{ confluent_dir }}"
+        remote_src: yes
+
+    - name: ensure config and data directory exists
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ config_dir }}"
+        - "{{ zookeeper_data_dir }}"
+    - name: configure zookeeper properties
+      template:
+        src: templates/zookeeper.properties.j2
+        dest: "{{ config_dir }}/zookeeper.properties"
+    - name: configure zookeeper id
+      copy:
+        content: "{{ myid }}"
+        dest: "{{ zookeeper_data_dir }}/myid"
+    - name: configure zookeeper log4j properties
+      copy:
+        src: "files/zookeeper-log4j.properties"
+        dest: "{{ config_dir }}/zookeeper-log4j.properties"
+
+    - name: check zookeeper process
+      command: pgrep -fa QuorumPeerMain
+      register: zookeeper_process
+      failed_when: zookeeper_process.rc >= 2
+    - name: start zookeeper
+      shell: >
+        LOG_DIR='{{ log_dir }}'
+        KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
+        {{ confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
+      when: zookeeper_process.stdout_lines | length == 0
+
