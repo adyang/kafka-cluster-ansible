@@ -10,6 +10,7 @@
     config_dir: "{{ user_home }}/config"
     log_dir: "{{ user_home }}/logs"
     zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
+    kafka_data_dir: "{{ user_home }}/data/kafka"
   tasks:
     - name: ensure downloads directory exists
       file:
@@ -58,4 +59,24 @@
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
         {{ confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
       when: zookeeper_process.stdout_lines | length == 0
+
+    - name: configure kafka properties
+      template:
+        src: templates/server.properties.j2
+        dest: "{{ config_dir }}/server.properties"
+    - name: configure kafka log4j properties
+      copy:
+        src: "files/kafka-log4j.properties"
+        dest: "{{ config_dir }}/kafka-log4j.properties"
+
+    - name: check kafka process
+      command: pgrep -fa SupportedKafka
+      register: kafka_process
+      failed_when: kafka_process.rc >= 2
+    - name: start kafka
+      shell: >
+        LOG_DIR='{{ log_dir }}'
+        KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/kafka-log4j.properties'
+        {{ confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties
+      when: kafka_process.stdout_lines | length == 0
 
