@@ -10,6 +10,7 @@
     config_dir: "{{ user_home }}/config"
     log_dir: "{{ user_home }}/logs"
     zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
+    zookeeper_client_port: 2181
     kafka_data_dir: "{{ user_home }}/data/kafka"
   tasks:
     - name: ensure downloads directory exists
