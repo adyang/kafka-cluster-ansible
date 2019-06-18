@@ -4,8 +4,10 @@
   vars:
     user_home: /home/vagrant
     downloads_dir: "{{ user_home }}/downloads"
-    confluent_version: 5.2.1
+    confluent_version: 5.2.2
     confluent_archive: "confluent-{{ confluent_version }}-2.12.tar.gz"
+    confluent_archive_url: "http://packages.confluent.io/archive/5.2/{{ confluent_archive }}"
+    confluent_checksum_url: "{{ confluent_archive_url }}.sha256.txt"
     confluent_dir: "{{ user_home }}/confluent-{{ confluent_version }}"
     config_dir: "{{ user_home }}/config"
     log_dir: "{{ user_home }}/logs"
@@ -19,9 +21,9 @@
         state: directory
     - name: download confluent platform
       get_url:
-        url: "http://packages.confluent.io/archive/5.2/{{ confluent_archive }}"
+        url: "{{ confluent_archive_url }}"
         dest: "{{ downloads_dir }}/{{ confluent_archive }}"
-        checksum: sha256:11fdcc557aca782e87352ed6e655c37c71fb7b3a003796ee956970b01dedbbb1
+        checksum: "sha256:{{ confluent_checksum_url }}"
         timeout: 30
     - name: unarchive confluent platform
       unarchive:
