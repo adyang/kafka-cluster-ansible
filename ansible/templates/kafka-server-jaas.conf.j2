@@ -1,0 +1,13 @@
+KafkaServer {
+   org.apache.kafka.common.security.plain.PlainLoginModule required
+   username="kafkabroker"
+   password="{{ kafka_kafkabroker_pass }}"
+   user_kafkabroker="{{ kafka_kafkabroker_pass }}"
+   user_client="{{ kafka_client_pass }}";
+};
+
+Client {
+   org.apache.zookeeper.server.auth.DigestLoginModule required
+   username="kafka"
+   password="{{ kafka_zookeeper_kafka_pass }}";
+};

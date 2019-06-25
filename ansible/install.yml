@@ -2,6 +2,15 @@
 
 - hosts: kafka
   vars:
+    mandatory_vars:
+      - zookeeper_super_pass
+      - zookeeper_kafka_pass
+      - kafka_truststore_pass
+      - kafka_keystore_pass
+      - kafka_key_pass
+      - kafka_kafkabroker_pass
+      - kafka_client_pass
+      - kafka_zookeeper_kafka_pass
     user_home: /home/vagrant
     downloads_dir: "{{ user_home }}/downloads"
     confluent_version: 5.2.2
@@ -14,7 +23,16 @@
     zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
     zookeeper_client_port: 2181
     kafka_data_dir: "{{ user_home }}/data/kafka"
+    kafka_truststore: "{{ user_home }}/keystores/kafka.server.truststore.jks"
+    kafka_keystore: "{{ user_home }}/keystores/kafka.server.keystore.jks"
   tasks:
+    - name: ensure mandatory variables are defined
+      assert:
+        that: lookup('vars', item, default='') != ''
+        fail_msg: "Undefined or empty variable: '{{ item }}'"
+        quiet: yes
+      loop: "{{ mandatory_vars }}"
+
     - name: ensure downloads directory exists
       file:
         path: "{{ downloads_dir }}"
@@ -51,6 +69,11 @@
       copy:
         src: "files/zookeeper-log4j.properties"
         dest: "{{ config_dir }}/zookeeper-log4j.properties"
+    - name: configure zookeeper JAAS
+      template:
+        src: templates/zookeeper-jaas.conf.j2
+        dest: "{{ config_dir }}/zookeeper-jaas.conf"
+        mode: u=r,g=,o=
 
     - name: check zookeeper process
       command: pgrep -fa QuorumPeerMain
@@ -58,6 +81,7 @@
       failed_when: zookeeper_process.rc >= 2
     - name: start zookeeper
       shell: >
+        KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/zookeeper-jaas.conf'
         LOG_DIR='{{ log_dir }}/zookeeper'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
         {{ confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
@@ -71,6 +95,11 @@
       copy:
         src: "files/kafka-log4j.properties"
         dest: "{{ config_dir }}/kafka-log4j.properties"
+    - name: configure kafka JAAS
+      template:
+        src: templates/kafka-server-jaas.conf.j2
+        dest: "{{ config_dir }}/kafka-server-jaas.conf"
+        mode: u=r,g=,o=
 
     - name: check kafka process
       command: pgrep -fa SupportedKafka
@@ -78,6 +107,7 @@
       failed_when: kafka_process.rc >= 2
     - name: start kafka
       shell: >
+        KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/kafka-server-jaas.conf'
         LOG_DIR='{{ log_dir }}/kafka'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/kafka-log4j.properties'
         {{ confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties

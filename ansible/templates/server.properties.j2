@@ -28,12 +28,24 @@ broker.id={{ broker_id }}
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-#listeners=PLAINTEXT://:9092
+listeners=SSL://:9093,SASL_SSL://:9094
 
 # Hostname and port the broker will advertise to producers and consumers. If not set, 
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
-#advertised.listeners=PLAINTEXT://your.host.name:9092
+#advertised.listeners=SSL://:9093,SASL_SSL://:9094
+
+security.inter.broker.protocol=SSL
+ssl.client.auth=required
+ssl.truststore.location={{ kafka_truststore }}
+ssl.truststore.password={{ kafka_truststore_pass }}
+ssl.keystore.location={{ kafka_keystore }}
+ssl.keystore.password={{ kafka_keystore_pass }}
+ssl.key.password={{ kafka_key_pass }}
+sasl.enabled.mechanisms=PLAIN
+
+authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
+super.users={{ groups['kafka'] | map('extract', hostvars, 'cert_dname') | map('regex_replace', '^(.*)$', 'User:\\1') | join(';') }}
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
@@ -67,6 +79,8 @@ num.partitions=9
 # The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
 # This value is recommended to be increased for installations with data dirs located in RAID array.
 num.recovery.threads.per.data.dir=1
+
+delete.topic.enable=true
 
 ############################# Internal Topic Settings  #############################
 # The replication factor for the group metadata internal topics "__consumer_offsets" and "__transaction_state"
