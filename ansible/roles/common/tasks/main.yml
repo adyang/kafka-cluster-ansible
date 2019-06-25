@@ -1,0 +1,18 @@
+---
+- name: ensure downloads directory exists
+  file:
+    path: "{{ common_downloads_dir }}"
+    state: directory
+- name: download confluent platform
+  get_url:
+    url: "{{ common_confluent_archive_url }}"
+    dest: "{{ common_downloads_dir }}/{{ common_confluent_archive }}"
+    checksum: "sha256:{{ common_confluent_checksum_url }}"
+    timeout: 30
+- name: unarchive confluent platform
+  unarchive:
+    src: "{{ common_downloads_dir }}/{{ common_confluent_archive }}"
+    dest: "{{ common_base_dir }}"
+    creates: "{{ common_confluent_dir }}"
+    remote_src: yes
+

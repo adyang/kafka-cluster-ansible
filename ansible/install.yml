@@ -1,5 +1,4 @@
 ---
-
 - hosts: kafka
   vars:
     mandatory_vars:
@@ -12,12 +11,6 @@
       - kafka_client_pass
       - kafka_zookeeper_kafka_pass
     user_home: /home/vagrant
-    downloads_dir: "{{ user_home }}/downloads"
-    confluent_version: 5.2.2
-    confluent_archive: "confluent-{{ confluent_version }}-2.12.tar.gz"
-    confluent_archive_url: "http://packages.confluent.io/archive/5.2/{{ confluent_archive }}"
-    confluent_checksum_url: "{{ confluent_archive_url }}.sha256.txt"
-    confluent_dir: "{{ user_home }}/confluent-{{ confluent_version }}"
     config_dir: "{{ user_home }}/config"
     log_dir: "{{ user_home }}/logs"
     zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
@@ -33,22 +26,9 @@
         quiet: yes
       loop: "{{ mandatory_vars }}"
 
-    - name: ensure downloads directory exists
-      file:
-        path: "{{ downloads_dir }}"
-        state: directory
-    - name: download confluent platform
-      get_url:
-        url: "{{ confluent_archive_url }}"
-        dest: "{{ downloads_dir }}/{{ confluent_archive }}"
-        checksum: "sha256:{{ confluent_checksum_url }}"
-        timeout: 30
-    - name: unarchive confluent platform
-      unarchive:
-        src: "{{ downloads_dir }}/{{ confluent_archive }}"
-        dest: "{{ user_home }}"
-        creates: "{{ confluent_dir }}"
-        remote_src: yes
+    - name: install confluent platform
+      import_role:
+        name: common
 
     - name: ensure config and data directory exists
       file:
@@ -84,7 +64,7 @@
         KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/zookeeper-jaas.conf'
         LOG_DIR='{{ log_dir }}/zookeeper'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
-        {{ confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
+        {{ common_confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
       when: zookeeper_process.stdout_lines | length == 0
 
     - name: configure kafka properties
@@ -110,6 +90,6 @@
         KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/kafka-server-jaas.conf'
         LOG_DIR='{{ log_dir }}/kafka'
         KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/kafka-log4j.properties'
-        {{ confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties
+        {{ common_confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties
       when: kafka_process.stdout_lines | length == 0
 
