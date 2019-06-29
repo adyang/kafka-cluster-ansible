@@ -1,0 +1,38 @@
+---
+- name: ensure config and data directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ zookeeper_config_dir }}"
+    - "{{ zookeeper_data_dir }}"
+- name: configure zookeeper properties
+  template:
+    src: zookeeper.properties.j2
+    dest: "{{ zookeeper_config_dir }}/zookeeper.properties"
+- name: configure zookeeper id
+  copy:
+    content: "{{ myid }}"
+    dest: "{{ zookeeper_data_dir }}/myid"
+- name: configure zookeeper log4j properties
+  copy:
+    src: zookeeper-log4j.properties
+    dest: "{{ zookeeper_config_dir }}/zookeeper-log4j.properties"
+- name: configure zookeeper JAAS
+  template:
+    src: zookeeper-jaas.conf.j2
+    dest: "{{ zookeeper_config_dir }}/zookeeper-jaas.conf"
+    mode: u=r,g=,o=
+
+- name: check zookeeper process
+  command: pgrep -fa QuorumPeerMain
+  register: zookeeper_process
+  failed_when: zookeeper_process.rc >= 2
+- name: start zookeeper
+  shell: >
+    KAFKA_OPTS='-Djava.security.auth.login.config={{ zookeeper_config_dir }}/zookeeper-jaas.conf'
+    LOG_DIR='{{ zookeeper_log_dir }}/zookeeper'
+    KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ zookeeper_config_dir }}/zookeeper-log4j.properties'
+    {{ zookeeper_bin }}/zookeeper-server-start -daemon {{ zookeeper_config_dir }}/zookeeper.properties
+  when: zookeeper_process.stdout_lines | length == 0
+

@@ -13,8 +13,6 @@
     user_home: /home/vagrant
     config_dir: "{{ user_home }}/config"
     log_dir: "{{ user_home }}/logs"
-    zookeeper_data_dir: "{{ user_home }}/data/zookeeper"
-    zookeeper_client_port: 2181
     kafka_data_dir: "{{ user_home }}/data/kafka"
     kafka_truststore: "{{ user_home }}/keystores/kafka.server.truststore.jks"
     kafka_keystore: "{{ user_home }}/keystores/kafka.server.keystore.jks"
@@ -30,42 +28,9 @@
       import_role:
         name: common
 
-    - name: ensure config and data directory exists
-      file:
-        path: "{{ item }}"
-        state: directory
-      with_items:
-        - "{{ config_dir }}"
-        - "{{ zookeeper_data_dir }}"
-    - name: configure zookeeper properties
-      template:
-        src: templates/zookeeper.properties.j2
-        dest: "{{ config_dir }}/zookeeper.properties"
-    - name: configure zookeeper id
-      copy:
-        content: "{{ myid }}"
-        dest: "{{ zookeeper_data_dir }}/myid"
-    - name: configure zookeeper log4j properties
-      copy:
-        src: "files/zookeeper-log4j.properties"
-        dest: "{{ config_dir }}/zookeeper-log4j.properties"
-    - name: configure zookeeper JAAS
-      template:
-        src: templates/zookeeper-jaas.conf.j2
-        dest: "{{ config_dir }}/zookeeper-jaas.conf"
-        mode: u=r,g=,o=
-
-    - name: check zookeeper process
-      command: pgrep -fa QuorumPeerMain
-      register: zookeeper_process
-      failed_when: zookeeper_process.rc >= 2
-    - name: start zookeeper
-      shell: >
-        KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/zookeeper-jaas.conf'
-        LOG_DIR='{{ log_dir }}/zookeeper'
-        KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/zookeeper-log4j.properties'
-        {{ common_confluent_dir }}/bin/zookeeper-server-start -daemon {{ config_dir }}/zookeeper.properties
-      when: zookeeper_process.stdout_lines | length == 0
+    - name: install zookeeper
+      import_role:
+        name: zookeeper
 
     - name: configure kafka properties
       template:
