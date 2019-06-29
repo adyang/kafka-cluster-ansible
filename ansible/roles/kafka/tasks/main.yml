@@ -1,0 +1,34 @@
+---
+- name: ensure config and data directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ kafka_config_dir }}"
+    - "{{ kafka_data_dir }}"
+- name: configure kafka properties
+  template:
+    src: server.properties.j2
+    dest: "{{ kafka_config_dir }}/server.properties"
+- name: configure kafka log4j properties
+  copy:
+    src: kafka-log4j.properties
+    dest: "{{ kafka_config_dir }}/kafka-log4j.properties"
+- name: configure kafka JAAS
+  template:
+    src: kafka-server-jaas.conf.j2
+    dest: "{{ kafka_config_dir }}/kafka-server-jaas.conf"
+    mode: u=r,g=,o=
+
+- name: check kafka process
+  command: pgrep -fa SupportedKafka
+  register: kafka_process
+  failed_when: kafka_process.rc >= 2
+- name: start kafka
+  shell: >
+    KAFKA_OPTS='-Djava.security.auth.login.config={{ kafka_config_dir }}/kafka-server-jaas.conf'
+    LOG_DIR='{{ kafka_log_dir }}/kafka'
+    KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ kafka_config_dir }}/kafka-log4j.properties'
+    {{ kafka_bin }}/kafka-server-start -daemon {{ kafka_config_dir }}/server.properties
+  when: kafka_process.stdout_lines | length == 0
+

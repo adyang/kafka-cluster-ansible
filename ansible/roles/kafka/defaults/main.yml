@@ -1,0 +1,9 @@
+---
+kafka_base_dir: "{{ ansible_env.HOME }}"
+kafka_config_dir: "{{ kafka_base_dir }}/config"
+kafka_log_dir: "{{ kafka_base_dir }}/logs"
+kafka_data_dir: "{{ kafka_base_dir }}/data/kafka"
+kafka_truststore: "{{ kafka_base_dir }}/keystores/kafka.server.truststore.jks"
+kafka_keystore: "{{ kafka_base_dir }}/keystores/kafka.server.keystore.jks"
+kafka_bin: "{{ common_confluent_dir }}/bin"
+

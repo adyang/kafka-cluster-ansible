@@ -10,12 +10,6 @@
       - kafka_kafkabroker_pass
       - kafka_client_pass
       - kafka_zookeeper_kafka_pass
-    user_home: /home/vagrant
-    config_dir: "{{ user_home }}/config"
-    log_dir: "{{ user_home }}/logs"
-    kafka_data_dir: "{{ user_home }}/data/kafka"
-    kafka_truststore: "{{ user_home }}/keystores/kafka.server.truststore.jks"
-    kafka_keystore: "{{ user_home }}/keystores/kafka.server.keystore.jks"
   tasks:
     - name: ensure mandatory variables are defined
       assert:
@@ -23,38 +17,13 @@
         fail_msg: "Undefined or empty variable: '{{ item }}'"
         quiet: yes
       loop: "{{ mandatory_vars }}"
-
     - name: install confluent platform
       import_role:
         name: common
-
     - name: install zookeeper
       import_role:
         name: zookeeper
-
-    - name: configure kafka properties
-      template:
-        src: templates/server.properties.j2
-        dest: "{{ config_dir }}/server.properties"
-    - name: configure kafka log4j properties
-      copy:
-        src: "files/kafka-log4j.properties"
-        dest: "{{ config_dir }}/kafka-log4j.properties"
-    - name: configure kafka JAAS
-      template:
-        src: templates/kafka-server-jaas.conf.j2
-        dest: "{{ config_dir }}/kafka-server-jaas.conf"
-        mode: u=r,g=,o=
-
-    - name: check kafka process
-      command: pgrep -fa SupportedKafka
-      register: kafka_process
-      failed_when: kafka_process.rc >= 2
-    - name: start kafka
-      shell: >
-        KAFKA_OPTS='-Djava.security.auth.login.config={{ config_dir }}/kafka-server-jaas.conf'
-        LOG_DIR='{{ log_dir }}/kafka'
-        KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ config_dir }}/kafka-log4j.properties'
-        {{ common_confluent_dir }}/bin/kafka-server-start -daemon {{ config_dir }}/server.properties
-      when: kafka_process.stdout_lines | length == 0
+    - name: install kafka
+      import_role:
+        name: kafka
 
