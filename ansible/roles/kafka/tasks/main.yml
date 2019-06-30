@@ -1,4 +1,8 @@
 ---
+- name: install confluent platform
+  import_role:
+    name: common
+
 - name: ensure config and data directory exists
   file:
     path: "{{ item }}"

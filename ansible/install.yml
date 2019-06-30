@@ -17,9 +17,6 @@
         fail_msg: "Undefined or empty variable: '{{ item }}'"
         quiet: yes
       loop: "{{ mandatory_vars }}"
-    - name: install confluent platform
-      import_role:
-        name: common
     - name: install zookeeper
       import_role:
         name: zookeeper
