@@ -6,3 +6,7 @@ zookeeper_data_dir: "{{ zookeeper_base_dir }}/data/zookeeper"
 zookeeper_bin: "{{ common_confluent_dir }}/bin"
 zookeeper_client_port: 2181
 
+zookeeper_mandatory_vars:
+  - zookeeper_super_pass
+  - zookeeper_kafka_pass
+

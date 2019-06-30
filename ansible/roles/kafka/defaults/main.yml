@@ -7,3 +7,11 @@ kafka_truststore: "{{ kafka_base_dir }}/keystores/kafka.server.truststore.jks"
 kafka_keystore: "{{ kafka_base_dir }}/keystores/kafka.server.keystore.jks"
 kafka_bin: "{{ common_confluent_dir }}/bin"
 
+kafka_mandatory_vars:
+  - kafka_truststore_pass
+  - kafka_keystore_pass
+  - kafka_key_pass
+  - kafka_kafkabroker_pass
+  - kafka_client_pass
+  - kafka_zookeeper_kafka_pass
+

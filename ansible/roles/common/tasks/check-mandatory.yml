@@ -1,0 +1,8 @@
+---
+- name: ensure mandatory variables are defined
+  assert:
+    that: lookup('vars', item, default='') != ''
+    fail_msg: "Undefined or empty variable: '{{ item }}'"
+    quiet: yes
+  loop: "{{ common_mandatory_vars }}"
+

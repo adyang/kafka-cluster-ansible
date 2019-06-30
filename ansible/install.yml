@@ -1,26 +1,8 @@
 ---
 - hosts: kafka
-  vars:
-    mandatory_vars:
-      - zookeeper_super_pass
-      - zookeeper_kafka_pass
-      - kafka_truststore_pass
-      - kafka_keystore_pass
-      - kafka_key_pass
-      - kafka_kafkabroker_pass
-      - kafka_client_pass
-      - kafka_zookeeper_kafka_pass
   tasks:
-    - name: ensure mandatory variables are defined
-      assert:
-        that: lookup('vars', item, default='') != ''
-        fail_msg: "Undefined or empty variable: '{{ item }}'"
-        quiet: yes
-      loop: "{{ mandatory_vars }}"
-    - name: install zookeeper
-      import_role:
+    - import_role:
         name: zookeeper
-    - name: install kafka
-      import_role:
+    - import_role:
         name: kafka
 

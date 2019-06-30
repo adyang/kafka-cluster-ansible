@@ -1,4 +1,9 @@
 ---
+- import_role:
+    name: common
+    tasks_from: check-mandatory.yml
+  vars:
+    common_mandatory_vars: "{{ kafka_mandatory_vars }}"
 - name: install confluent platform
   import_role:
     name: common
