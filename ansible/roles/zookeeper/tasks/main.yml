@@ -37,6 +37,7 @@
   command: pgrep -fa QuorumPeerMain
   register: zookeeper_process
   failed_when: zookeeper_process.rc >= 2
+  changed_when: false
 - name: start zookeeper
   shell: >
     KAFKA_OPTS='-Djava.security.auth.login.config={{ zookeeper_config_dir }}/zookeeper-jaas.conf'
