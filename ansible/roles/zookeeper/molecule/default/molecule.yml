@@ -9,10 +9,19 @@ lint:
 platforms:
   - name: zookeeper-1
     image: debian:9
+    network_mode: bridge
+    networks:
+      - name: zoo
   - name: zookeeper-2
     image: debian:9
+    network_mode: bridge
+    networks:
+      - name: zoo
   - name: zookeeper-3
     image: debian:9
+    network_mode: bridge
+    networks:
+      - name: zoo
 provisioner:
   name: ansible
   inventory:
