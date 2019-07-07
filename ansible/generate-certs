@@ -1,0 +1,120 @@
+#!/bin/bash
+
+readonly CERT_DIR="${PWD}/certificates"
+readonly CA_KEY="${CERT_DIR}/ca-key"
+readonly CA_CERT="${CERT_DIR}/ca-cert"
+readonly CA_PASS='password'
+readonly NUM_BROKERS=3
+readonly BROKER_TRUSTSTORE_PASS='password'
+readonly BROKER_KEYSTORE_PASS='password'
+readonly BROKER_KEY_PASS='password'
+readonly BROKER_IP_ADDRS=('192.168.204.51' '192.168.204.52' '192.168.204.53')
+readonly CLIENT_TRUSTSTORE_PASS='password'
+
+create_ca_certkey_pair() {
+  openssl req -new -x509 -keyout "${CA_KEY}" -out "${CA_CERT}" -days 730 -subj '/CN=kafka-ca' -passout "pass:${CA_PASS}"
+}
+
+create_broker_certs() {
+  local broker_cert_dir="$1"
+  local broker_common_name="$2"
+  local broker_ip="$3"
+  mkdir -p "${broker_cert_dir}"
+  create_truststore_with_ca "${broker_cert_dir}/kafka.server.truststore.jks" "${BROKER_TRUSTSTORE_PASS}"
+  create_broker_keystore "${broker_cert_dir}/kafka.server.keystore.jks" "CN=${broker_common_name}" "SAN=DNS:${broker_common_name},IP:${broker_ip}"
+  create_signing_request_cert "${broker_cert_dir}/kafka.server.keystore.jks" "${broker_cert_dir}/cert.csr"
+  sign_csr_with_ca "${broker_cert_dir}/cert.csr" "${broker_cert_dir}/cert-signed"
+  import_ca_into_truststore "${broker_cert_dir}/kafka.server.keystore.jks"
+  import_signed_cert_into_truststore "${broker_cert_dir}/kafka.server.keystore.jks" "${broker_cert_dir}/cert-signed"
+}
+
+create_truststore_with_ca() {
+  local truststore="$1"
+  local truststore_pass="$2"
+  keytool -importcert -noprompt \
+    -file "${CA_CERT}" \
+    -alias CARoot \
+    -keystore "${truststore}"  \
+    -storepass "${truststore_pass}"
+}
+
+create_broker_keystore() {
+  local keystore="$1"
+  local dname="$2"
+  local extension="$3"
+  keytool -genkeypair \
+    -keystore "${keystore}" \
+    -alias localhost \
+    -validity 730 \
+    -storepass "${BROKER_KEYSTORE_PASS}" \
+    -keypass "${BROKER_KEY_PASS}" \
+    -dname "${dname}" \
+    -ext "${extension}"
+}
+
+create_signing_request_cert() {
+  local keystore="$1"
+  local csr="$2"
+  keytool --certreq \
+    -keystore "${keystore}" \
+    -alias localhost  \
+    -storepass "${BROKER_KEYSTORE_PASS}" \
+    -file "${csr}"
+}
+
+sign_csr_with_ca() {
+  local csr="$1"
+  local signed_cert="$2"
+  openssl x509 -req \
+    -in "${csr}" \
+    -out "${signed_cert}" \
+    -CA "${CA_CERT}" -CAkey "${CA_KEY}" -CAcreateserial \
+    -passin "pass:${CA_PASS}" \
+    -days 730 
+}
+
+import_ca_into_truststore() {
+  local keystore="$1"
+  keytool -importcert -noprompt \
+    -file "${CA_CERT}" \
+    -alias CARoot \
+    -keystore "${keystore}" \
+    -storepass "${BROKER_KEYSTORE_PASS}"
+}
+
+import_signed_cert_into_truststore() {
+  local keystore="$1"
+  local signed_cert="$2"
+  keytool -importcert -noprompt \
+    -file "${signed_cert}" \
+    -alias localhost \
+    -keystore "${keystore}" \
+    -storepass "${BROKER_KEYSTORE_PASS}"
+}
+
+create_client_certs() {
+  local client_cert_dir="$1"
+  mkdir -p "${client_cert_dir}"
+  keytool -importcert -noprompt \
+    -file "${CA_CERT}" \
+    -alias CARoot \
+    -keystore "${client_cert_dir}/kafka.client.truststore.jks" \
+    -storepass "${CLIENT_TRUSTSTORE_PASS}"
+}
+
+main() {
+  mkdir -p "${CERT_DIR}"
+
+  create_ca_certkey_pair
+
+  for i in {1..3}; do
+    create_broker_certs "${CERT_DIR}/kafka-${i}" "kafka-${i}" "${BROKER_IP_ADDRS[i-1]}"
+  done
+
+  create_client_certs "${CERT_DIR}/client"
+
+  touch "${CERT_DIR}/generate.success"
+}
+
+main "$@"
+

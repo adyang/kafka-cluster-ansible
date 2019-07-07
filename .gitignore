@@ -1,5 +1,6 @@
 .vagrant/
 *.swp
-credentials.yml
 __pycache__
+credentials.yml
+certificates/
 

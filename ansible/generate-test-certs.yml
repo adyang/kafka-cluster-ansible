@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: generate certificates
+      script: generate-certs
+      args:
+        creates: certificates/generate.success
+
+- hosts: kafka
+  vars:
+    keystores_dir: "{{ ansible_env.HOME }}/keystores"
+    client_dir: "{{ ansible_env.HOME }}/client"
+  tasks:
+    - name: ensure keystores directory exists
+      file:
+        path: "{{ keystores_dir }}"
+        state: directory
+    - name: copy server certificates
+      copy:
+        src: "certificates/kafka-{{ broker_id }}/"
+        dest: "{{ keystores_dir }}"
+    - name: copy client certificates for testing
+      copy:
+        src: "certificates/client/"
+        dest: "{{ client_dir }}"
+
