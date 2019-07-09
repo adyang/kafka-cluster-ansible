@@ -1,0 +1,20 @@
+---
+- name: generate certificates
+  script: generate-certs
+  args:
+    creates: certificates/generate.success
+  delegate_to: localhost
+  run_once: true
+- name: ensure keystores directory exists
+  file:
+    path: "{{ certs_keystores_dir }}"
+    state: directory
+- name: copy server certificates
+  copy:
+    src: "certificates/kafka-{{ broker_id }}/"
+    dest: "{{ certs_keystores_dir }}"
+- name: copy client certificates for testing
+  copy:
+    src: "certificates/client/"
+    dest: "{{ certs_client_dir }}"
+

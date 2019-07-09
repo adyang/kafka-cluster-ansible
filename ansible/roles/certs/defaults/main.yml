@@ -1,0 +1,4 @@
+---
+certs_keystores_dir: "{{ ansible_env.HOME }}/keystores"
+certs_client_dir: "{{ ansible_env.HOME }}/client"
+
