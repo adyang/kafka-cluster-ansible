@@ -33,6 +33,7 @@
   command: pgrep -fa SupportedKafka
   register: kafka_process
   failed_when: kafka_process.rc >= 2
+  changed_when: false
 - name: start kafka
   shell: >
     KAFKA_OPTS='-Djava.security.auth.login.config={{ kafka_config_dir }}/kafka-server-jaas.conf'

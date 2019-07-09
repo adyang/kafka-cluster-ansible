@@ -1,0 +1,32 @@
+---
+- name: Converge
+  hosts: all
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+  roles:
+    - role: certs
+    - role: zookeeper
+      vars:
+        zookeeper_super_pass: admin-pass
+        zookeeper_kafka_pass: kafka-pass
+    - role: kafka
+      vars:
+        kafka_truststore_pass: password
+        kafka_keystore_pass: password
+        kafka_key_pass: password
+        kafka_kafkabroker_pass: kafkabroker-pass
+        kafka_client_pass: client-pass
+        kafka_zookeeper_kafka_pass: kafka-pass
+  tasks:
+    - name: create client security configuration for testing
+      copy:
+        content: |
+          security.protocol=SASL_SSL
+          ssl.truststore.location={{ certs_client_dir }}/kafka.client.truststore.jks
+          ssl.truststore.password=password
+          sasl.mechanism=PLAIN
+          sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"client\" \
+              password=\"{{ kafka_client_pass }}\";
+        dest: "{{ certs_client_dir }}/client-security.properties"
+

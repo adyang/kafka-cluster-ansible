@@ -9,31 +9,43 @@ lint:
   options:
     config-file: ../../.lint/.yamllint
 platforms:
-  - name: zookeeper-1
+  - name: kafka-1
+    groups:
+      - kafka
     image: debian:9
     network_mode: bridge
     networks:
-      - name: zoo
-  - name: zookeeper-2
+      - name: kafka
+  - name: kafka-2
+    groups:
+      - kafka
     image: debian:9
     network_mode: bridge
     networks:
-      - name: zoo
-  - name: zookeeper-3
+      - name: kafka
+  - name: kafka-3
+    groups:
+      - kafka
     image: debian:9
     network_mode: bridge
     networks:
-      - name: zoo
+      - name: kafka
 provisioner:
   name: ansible
   inventory:
     host_vars:
-      zookeeper-1:
+      kafka-1:
+        broker_id: 1
         myid: 1
-      zookeeper-2:
+        cert_dname: 'CN=kafka-1'
+      kafka-2:
+        broker_id: 2
         myid: 2
-      zookeeper-3:
+        cert_dname: 'CN=kafka-2'
+      kafka-3:
+        broker_id: 3
         myid: 3
+        cert_dname: 'CN=kafka-3'
   lint:
     name: ansible-lint
 verifier:

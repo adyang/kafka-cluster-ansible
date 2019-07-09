@@ -1,6 +1,8 @@
 ---
 - name: Converge
   hosts: all
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
   roles:
     - role: zookeeper
       vars:
