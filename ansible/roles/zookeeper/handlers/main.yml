@@ -1,0 +1,11 @@
+---
+- name: reload systemd config
+  systemd:
+    daemon_reload: true
+  become: true
+- name: restart zookeeper
+  systemd:
+    name: zookeeper
+    state: restarted
+  become: true
+

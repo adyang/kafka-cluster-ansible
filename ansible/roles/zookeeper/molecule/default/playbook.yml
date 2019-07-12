@@ -6,6 +6,7 @@
   roles:
     - role: zookeeper
       vars:
+        zookeeper_user: root
         zookeeper_super_pass: admin-pass
         zookeeper_kafka_pass: kafka-pass
 

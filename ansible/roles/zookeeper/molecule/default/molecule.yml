@@ -10,23 +10,41 @@ lint:
     config-file: ../../.lint/.yamllint
 platforms:
   - name: zookeeper-1
-    image: debian:9
+    image: minimum2scp/systemd-stretch
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network_mode: bridge
     networks:
       - name: zoo
   - name: zookeeper-2
-    image: debian:9
+    image: minimum2scp/systemd-stretch
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network_mode: bridge
     networks:
       - name: zoo
   - name: zookeeper-3
-    image: debian:9
+    image: minimum2scp/systemd-stretch
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network_mode: bridge
     networks:
       - name: zoo
 provisioner:
   name: ansible
   inventory:
+    group_vars:
+      all:
+        ansible_user: ansible
     host_vars:
       zookeeper-1:
         myid: 1

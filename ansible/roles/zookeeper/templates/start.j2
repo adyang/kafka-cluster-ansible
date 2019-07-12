@@ -1,0 +1,7 @@
+#!/bin/bash
+
+KAFKA_OPTS='-Djava.security.auth.login.config={{ zookeeper_config_dir }}/zookeeper-jaas.conf' \
+LOG_DIR='{{ zookeeper_log_dir }}/zookeeper' \
+KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ zookeeper_config_dir }}/zookeeper-log4j.properties' \
+{{ zookeeper_bin }}/zookeeper-server-start {{ zookeeper_config_dir }}/zookeeper.properties
+

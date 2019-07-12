@@ -7,6 +7,13 @@ ansible = testinfra.utils.ansible_runner.AnsibleRunner(
 testinfra_hosts = ansible.get_hosts('all')
 
 
+def test_zookeeper_service_is_running_and_enabled(host):
+    zookeeper = host.service('zookeeper')
+
+    assert zookeeper.is_running
+    assert zookeeper.is_enabled
+
+
 def test_zookeeper_is_up(host):
     response = host.check_output('printf "ruok" | nc localhost 2181')
 

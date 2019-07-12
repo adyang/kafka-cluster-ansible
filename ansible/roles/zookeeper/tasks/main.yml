@@ -19,30 +19,47 @@
   template:
     src: zookeeper.properties.j2
     dest: "{{ zookeeper_config_dir }}/zookeeper.properties"
+  notify:
+    - restart zookeeper
 - name: configure zookeeper id
   copy:
     content: "{{ myid }}"
     dest: "{{ zookeeper_data_dir }}/myid"
+  notify:
+    - restart zookeeper
 - name: configure zookeeper log4j properties
   copy:
     src: zookeeper-log4j.properties
     dest: "{{ zookeeper_config_dir }}/zookeeper-log4j.properties"
+  notify:
+    - restart zookeeper
 - name: configure zookeeper JAAS
   template:
     src: zookeeper-jaas.conf.j2
     dest: "{{ zookeeper_config_dir }}/zookeeper-jaas.conf"
     mode: u=r,g=,o=
+  notify:
+    - restart zookeeper
+- name: configure start script
+  template:
+    src: start.j2
+    dest: "{{ zookeeper_base_dir }}/start-zookeeper"
+    mode: u+x
+  notify:
+    - restart zookeeper
+- name: configure systemd unit file
+  template:
+    src: zookeeper.service.j2
+    dest: /etc/systemd/system/zookeeper.service
+  become: true
+  notify:
+    - reload systemd config
+    - restart zookeeper
 
-- name: check zookeeper process
-  command: pgrep -fa QuorumPeerMain
-  register: zookeeper_process
-  failed_when: zookeeper_process.rc >= 2
-  changed_when: false
-- name: start zookeeper
-  shell: >
-    KAFKA_OPTS='-Djava.security.auth.login.config={{ zookeeper_config_dir }}/zookeeper-jaas.conf'
-    LOG_DIR='{{ zookeeper_log_dir }}/zookeeper'
-    KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ zookeeper_config_dir }}/zookeeper-log4j.properties'
-    {{ zookeeper_bin }}/zookeeper-server-start -daemon {{ zookeeper_config_dir }}/zookeeper.properties
-  when: zookeeper_process.stdout_lines | length == 0
+- name: ensure zookeeper service
+  systemd:
+    name: zookeeper
+    enabled: true
+    state: started
+  become: true
 
