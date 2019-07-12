@@ -9,7 +9,8 @@ lint:
   options:
     config-file: ../../.lint/.yamllint
 platforms:
-  - name: zookeeper-1
+  - &zookeeper-instance
+    name: zookeeper-1
     image: minimum2scp/systemd-stretch
     command: /sbin/init
     capabilities:
@@ -19,26 +20,10 @@ platforms:
     network_mode: bridge
     networks:
       - name: zoo
-  - name: zookeeper-2
-    image: minimum2scp/systemd-stretch
-    command: /sbin/init
-    capabilities:
-      - SYS_ADMIN
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    network_mode: bridge
-    networks:
-      - name: zoo
-  - name: zookeeper-3
-    image: minimum2scp/systemd-stretch
-    command: /sbin/init
-    capabilities:
-      - SYS_ADMIN
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    network_mode: bridge
-    networks:
-      - name: zoo
+  - <<: *zookeeper-instance
+    name: zookeeper-2
+  - <<: *zookeeper-instance
+    name: zookeeper-3
 provisioner:
   name: ansible
   inventory:
