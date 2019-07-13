@@ -7,7 +7,7 @@ StartLimitBurst=5
 [Service]
 Type=simple
 User={{ kafka_user }}
-ExecStart={{ kafka_base_dir }}/start-kafka
+ExecStart={{ kafka_base_dir }}/start
 TimeoutStopSec=180
 Restart=always
 RestartSec=3

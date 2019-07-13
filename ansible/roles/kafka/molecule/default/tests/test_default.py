@@ -40,12 +40,12 @@ def test_cluster_replication(host):
              '| ' + confluent_bin + 'kafka-console-producer --broker-list kafka-1:9094 '
              '--topic test --producer.config ${HOME}/client/client-security.properties')
 
-    response = host.check_output(confluent_bin + 'kafka-console-consumer --bootstrap-server $(hostname):9094 '
-                                                 '--consumer.config ${HOME}/client/client-security.properties '
-                                                 '--topic test --group test '
-                                                 '--from-beginning --max-messages 1 --timeout-ms 3000')
+    response = host.run(confluent_bin + 'kafka-console-consumer --bootstrap-server $(hostname):9094 '
+                                        '--consumer.config ${HOME}/client/client-security.properties '
+                                        '--topic test --group test '
+                                        '--from-beginning --max-messages 1 --timeout-ms 5000')
 
-    assert 'test-message' in response
+    assert 'test-message' in response.stdout
 
     host.run(confluent_bin + 'kafka-topics --zookeeper localhost:2181 '
                              '--delete --topic test')

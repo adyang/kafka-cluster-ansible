@@ -13,6 +13,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
+    - "{{ kafka_base_dir }}"
     - "{{ kafka_config_dir }}"
     - "{{ kafka_data_dir }}"
 - name: configure kafka properties
@@ -37,7 +38,7 @@
 - name: configure start script
   template:
     src: start.j2
-    dest: "{{ kafka_base_dir }}/start-kafka"
+    dest: "{{ kafka_base_dir }}/start"
     mode: u+x
   notify:
     - kafka_restart_kafka
