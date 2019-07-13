@@ -6,6 +6,13 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
+def test_kafka_service_is_running_and_enabled(host):
+    kafka = host.service('kafka')
+
+    assert kafka.is_running
+    assert kafka.is_enabled
+
+
 def test_kafka_interbroker_communication_is_up(host):
     assert host.socket("tcp://9093").is_listening
 

@@ -9,30 +9,29 @@ lint:
   options:
     config-file: ../../.lint/.yamllint
 platforms:
-  - name: kafka-1
+  - &kafka-instance
+    name: kafka-1
     groups:
       - kafka
-    image: debian:9
+    image: minimum2scp/systemd-stretch
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network_mode: bridge
     networks:
       - name: kafka
-  - name: kafka-2
-    groups:
-      - kafka
-    image: debian:9
-    network_mode: bridge
-    networks:
-      - name: kafka
-  - name: kafka-3
-    groups:
-      - kafka
-    image: debian:9
-    network_mode: bridge
-    networks:
-      - name: kafka
+  - <<: *kafka-instance
+    name: kafka-2
+  - <<: *kafka-instance
+    name: kafka-3
 provisioner:
   name: ansible
   inventory:
+    group_vars:
+      all:
+        ansible_user: ansible
     host_vars:
       kafka-1:
         broker_id: 1

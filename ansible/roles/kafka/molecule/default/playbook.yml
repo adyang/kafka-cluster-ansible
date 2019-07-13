@@ -7,10 +7,12 @@
     - role: certs
     - role: zookeeper
       vars:
+        zookeeper_user: ansible
         zookeeper_super_pass: admin-pass
         zookeeper_kafka_pass: kafka-pass
     - role: kafka
       vars:
+        kafka_user: ansible
         kafka_truststore_pass: password
         kafka_keystore_pass: password
         kafka_key_pass: password

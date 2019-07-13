@@ -6,8 +6,10 @@ kafka_data_dir: "{{ kafka_base_dir }}/data/kafka"
 kafka_truststore: "{{ kafka_base_dir }}/keystores/kafka.server.truststore.jks"
 kafka_keystore: "{{ kafka_base_dir }}/keystores/kafka.server.keystore.jks"
 kafka_bin: "{{ common_confluent_dir }}/bin"
+kafka_zookeeper_service_target: zookeeper.target
 
 kafka_mandatory_vars:
+  - kafka_user
   - kafka_truststore_pass
   - kafka_keystore_pass
   - kafka_key_pass

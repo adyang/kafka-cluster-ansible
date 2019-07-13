@@ -1,0 +1,7 @@
+#!/bin/bash
+
+KAFKA_OPTS='-Djava.security.auth.login.config={{ kafka_config_dir }}/kafka-server-jaas.conf' \
+LOG_DIR='{{ kafka_log_dir }}/kafka' \
+KAFKA_LOG4J_OPTS='-Dlog4j.configuration=file:{{ kafka_config_dir }}/kafka-log4j.properties' \
+{{ kafka_bin }}/kafka-server-start {{ kafka_config_dir }}/server.properties
+
