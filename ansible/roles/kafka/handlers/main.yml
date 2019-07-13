@@ -1,9 +1,9 @@
 ---
-- name: reload systemd config
+- name: kafka_reload_systemd_config
   systemd:
     daemon_reload: true
   become: true
-- name: restart kafka
+- name: kafka_restart_kafka
   systemd:
     name: kafka
     state: restarted

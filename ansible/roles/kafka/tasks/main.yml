@@ -20,35 +20,35 @@
     src: server.properties.j2
     dest: "{{ kafka_config_dir }}/server.properties"
   notify:
-    - restart kafka
+    - kafka_restart_kafka
 - name: configure kafka log4j properties
   copy:
     src: kafka-log4j.properties
     dest: "{{ kafka_config_dir }}/kafka-log4j.properties"
   notify:
-    - restart kafka
+    - kafka_restart_kafka
 - name: configure kafka JAAS
   template:
     src: kafka-server-jaas.conf.j2
     dest: "{{ kafka_config_dir }}/kafka-server-jaas.conf"
     mode: u=r,g=,o=
   notify:
-    - restart kafka
+    - kafka_restart_kafka
 - name: configure start script
   template:
     src: start.j2
     dest: "{{ kafka_base_dir }}/start-kafka"
     mode: u+x
   notify:
-    - restart kafka
+    - kafka_restart_kafka
 - name: configure systemd unit file
   template:
     src: kafka.service.j2
     dest: /etc/systemd/system/kafka.service
   become: true
   notify:
-    - reload systemd config
-    - restart kafka
+    - kafka_reload_systemd_config
+    - kafka_restart_kafka
 
 - name: ensure kafka service
   systemd:
