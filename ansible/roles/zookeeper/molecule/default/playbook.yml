@@ -6,7 +6,7 @@
   roles:
     - role: zookeeper
       vars:
-        zookeeper_user: root
+        zookeeper_user: ansible
         zookeeper_super_pass: admin-pass
         zookeeper_kafka_pass: kafka-pass
 
