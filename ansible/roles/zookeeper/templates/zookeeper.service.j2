@@ -7,7 +7,7 @@ StartLimitBurst=5
 [Service]
 Type=simple
 User={{ zookeeper_user }}
-ExecStart={{ zookeeper_base_dir }}/start-zookeeper
+ExecStart={{ zookeeper_base_dir }}/start
 TimeoutStopSec=180
 Restart=always
 RestartSec=3

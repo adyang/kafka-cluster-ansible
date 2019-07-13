@@ -13,6 +13,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
+    - "{{ zookeeper_base_dir }}"
     - "{{ zookeeper_config_dir }}"
     - "{{ zookeeper_data_dir }}"
 - name: configure zookeeper properties
@@ -43,7 +44,7 @@
 - name: configure start script
   template:
     src: start.j2
-    dest: "{{ zookeeper_base_dir }}/start-zookeeper"
+    dest: "{{ zookeeper_base_dir }}/start"
     mode: u+x
   notify:
     - zookeeper_restart_zookeeper

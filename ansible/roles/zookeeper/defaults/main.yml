@@ -1,8 +1,8 @@
 ---
-zookeeper_base_dir: "{{ ansible_env.HOME }}"
+zookeeper_base_dir: "{{ ansible_env.HOME }}/zookeeper"
 zookeeper_config_dir: "{{ zookeeper_base_dir }}/config"
 zookeeper_log_dir: "{{ zookeeper_base_dir }}/logs"
-zookeeper_data_dir: "{{ zookeeper_base_dir }}/data/zookeeper"
+zookeeper_data_dir: "{{ zookeeper_base_dir }}/data"
 zookeeper_bin: "{{ common_confluent_dir }}/bin"
 zookeeper_client_port: 2181
 zookeeper_hosts: "{{ ansible_play_hosts_all }}"
