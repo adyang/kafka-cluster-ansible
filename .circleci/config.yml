@@ -6,6 +6,8 @@ jobs:
       - image: quay.io/ansible/molecule:2.22rc3
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: test ansible role
           command: |
