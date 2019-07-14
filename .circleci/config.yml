@@ -2,6 +2,9 @@
 version: 2.1
 jobs:
   test-role:
+    parameters:
+      role-name:
+        type: string
     docker:
       - image: quay.io/ansible/molecule:2.22rc3
     steps:
@@ -12,12 +15,15 @@ jobs:
           name: install test dependencies
           command: apk add --update --no-cache bash openssl openjdk8-jre
       - run:
-          name: test ansible role
+          name: test << parameters.role-name >> role
           command: |
-            cd ansible/roles/kafka
-            molecule --debug test
+            cd ansible/roles/<< parameters.role-name >>
+            molecule test
 workflows:
   test:
     jobs:
-      - test-role
+      - test-role:
+          role-name: zookeeper
+      - test-role:
+          role-name: kafka
 
