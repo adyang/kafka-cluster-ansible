@@ -43,7 +43,7 @@ def test_cluster_replication(host):
     response = host.run(confluent_bin + 'kafka-console-consumer --bootstrap-server $(hostname):9094 '
                                         '--consumer.config ${HOME}/client/client-security.properties '
                                         '--topic test --group test '
-                                        '--from-beginning --max-messages 1 --timeout-ms 5000')
+                                        '--from-beginning --max-messages 1 --timeout-ms 10000')
 
     assert 'test-message' in response.stdout
 
