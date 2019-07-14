@@ -12,7 +12,7 @@ jobs:
           name: test ansible role
           command: |
             cd ansible/roles/kafka
-            molecule test
+            molecule --debug test
 workflows:
   test:
     jobs:
