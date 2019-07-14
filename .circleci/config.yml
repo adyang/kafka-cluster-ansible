@@ -1,0 +1,14 @@
+---
+version: 2.1
+jobs:
+  test-role:
+    docker:
+      - image: quay.io/ansible/molecule:2.22rc3
+    steps:
+      - checkout
+      - run:
+          name: test ansible role
+          command: |
+            cd ansible/roles/kafka
+            molecule test
+
