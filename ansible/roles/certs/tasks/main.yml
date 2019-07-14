@@ -1,9 +1,9 @@
 ---
 - name: generate certificates
-  script: generate-certs
+  command: "{{ role_path }}/files/generate-certs"
   args:
     creates: certificates/generate.success
-  delegate_to: 127.0.0.1
+  delegate_to: localhost
   run_once: true
 - name: ensure keystores directory exists
   file:
