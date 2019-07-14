@@ -3,7 +3,7 @@
   script: generate-certs
   args:
     creates: certificates/generate.success
-  delegate_to: localhost
+  delegate_to: 127.0.0.1
   run_once: true
 - name: ensure keystores directory exists
   file:
