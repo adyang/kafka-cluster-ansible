@@ -11,4 +11,3 @@ jobs:
           command: |
             cd ansible/roles/kafka
             molecule test
-
