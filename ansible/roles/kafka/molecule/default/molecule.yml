@@ -15,10 +15,7 @@ platforms:
       - kafka
     image: minimum2scp/systemd-stretch
     command: /sbin/init
-    capabilities:
-      - SYS_ADMIN
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: True
     network_mode: bridge
     networks:
       - name: kafka
