@@ -23,7 +23,9 @@ workflows:
   test:
     jobs:
       - test-role:
+          name: test-role-zookeeper
           role-name: zookeeper
       - test-role:
+          name: test-role-kafka
           role-name: kafka
 
