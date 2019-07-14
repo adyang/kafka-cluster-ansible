@@ -11,3 +11,8 @@ jobs:
           command: |
             cd ansible/roles/kafka
             molecule test
+workflows:
+  test:
+    jobs:
+      - test-role
+
