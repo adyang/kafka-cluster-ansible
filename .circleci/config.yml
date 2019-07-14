@@ -9,6 +9,9 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
+          name: install test dependencies
+          command: apk add --update --no-cache bash openssl openjdk8-jre
+      - run:
           name: test ansible role
           command: |
             cd ansible/roles/kafka

@@ -1,6 +1,6 @@
 ---
 - name: generate certificates
-  command: "{{ role_path }}/files/generate-certs"
+  script: generate-certs
   args:
     creates: certificates/generate.success
   delegate_to: localhost
