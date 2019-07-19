@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/adyang/kafka-cluster-ansible.svg?style=svg)](https://circleci.com/gh/adyang/kafka-cluster-ansible)
+
 # Kafka Cluster Ansible
 ## Introduction
 The playbooks will install a Kafka cluster with interbroker communication using SSL and client-broker communication using SASL PLAIN.
