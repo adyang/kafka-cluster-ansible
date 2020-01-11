@@ -97,6 +97,7 @@ $ docker --version
 ```console
 $ pip3 install --user 'molecule[docker]==2.22rc3'
 ```
+`pipx` might not work properly because of all the dependencies that are required on the PATH.
 
 3. Install Squid (Optional)
 
@@ -106,6 +107,8 @@ On macOS, we can install SquidMan to help manage Squid:
 ```console
 $ brew cask install squidman
 ```
+
+Allow all hosts via `Cmd + ,` to Settings > Clients > New > Enter `all`.
 
 Add the following to the top of the Squid template (it can be found via `Cmd + ,` to Settings > Template) to cache everything:
 ```
