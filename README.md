@@ -49,7 +49,6 @@ kafka_key_pass: password
 kafka_kafkabroker_pass: kafkabroker-secret
 kafka_client_pass: client-secret
 kafka_zookeeper_kafka_pass: kafka-secret
-
 EOF
 ```
 
@@ -71,7 +70,6 @@ ssl.truststore.location=/home/vagrant/client/kafka.client.truststore.jks
 ssl.truststore.password=password
 sasl.mechanism=PLAIN
 sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required     username=\"client\"     password=\"client-secret\";
-
 EOF
 
 $ ~/confluent-5.2.2/bin/kafka-topics --zookeeper localhost:2181 --create --topic test --partitions 10 --replication-factor 3
