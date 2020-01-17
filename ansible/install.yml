@@ -1,8 +1,9 @@
 ---
 - hosts: kafka
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
   tasks:
     - import_role:
         name: zookeeper
     - import_role:
         name: kafka
-
