@@ -31,4 +31,3 @@
               username=\"client\" \
               password=\"{{ kafka_client_pass }}\";
         dest: "{{ certs_client_dir }}/client-security.properties"
-

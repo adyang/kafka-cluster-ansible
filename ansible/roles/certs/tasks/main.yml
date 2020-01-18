@@ -17,4 +17,3 @@
   copy:
     src: "certificates/client/"
     dest: "{{ certs_client_dir }}"
-

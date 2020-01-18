@@ -1,7 +1,7 @@
 ---
 dependency:
   name: galaxy
-  enabled: False
+  enabled: false
 driver:
   name: docker
 lint:
@@ -13,9 +13,10 @@ platforms:
     name: kafka-1
     groups:
       - kafka
+      - zookeeper
     image: minimum2scp/systemd-stretch
     command: /sbin/init
-    privileged: True
+    privileged: true
     network_mode: bridge
     networks:
       - name: kafka
@@ -50,4 +51,3 @@ verifier:
     name: flake8
     options:
       config: ../../.lint/.flake8
-

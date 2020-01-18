@@ -72,11 +72,11 @@ sasl.mechanism=PLAIN
 sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required     username=\"client\"     password=\"client-secret\";
 EOF
 
-$ ~/confluent-5.2.2/bin/kafka-topics --zookeeper localhost:2181 --create --topic test --partitions 10 --replication-factor 3
+$ ~/confluent-5.2.2/bin/kafka-topics --zookeeper zookeeper-1:2181 --create --topic test --partitions 10 --replication-factor 3
 
-$ ~/confluent-5.2.2/bin/kafka-acls --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:client --producer --topic test
+$ ~/confluent-5.2.2/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper-1:2181 --add --allow-principal User:client --producer --topic test
 
-$ ~/confluent-5.2.2/bin/kafka-acls --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:client --consumer --topic test --group test
+$ ~/confluent-5.2.2/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper-1:2181 --add --allow-principal User:client --consumer --topic test --group test
 
 $ printf 'test-message' | ~/confluent-5.2.2/bin/kafka-console-producer --broker-list kafka-1:9094 --producer.config client/client-security.properties --topic test
 

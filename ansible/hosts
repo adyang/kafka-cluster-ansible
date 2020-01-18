@@ -1,7 +1,12 @@
+[zookeeper]
+192.168.204.51 myid=1
+192.168.204.52 myid=2
+192.168.204.53 myid=3
+
 [kafka]
-192.168.204.51 broker_id=1 myid=1 cert_dname='CN=kafka-1'
-192.168.204.52 broker_id=2 myid=2 cert_dname='CN=kafka-2'
-192.168.204.53 broker_id=3 myid=3 cert_dname='CN=kafka-3'
+192.168.204.61 broker_id=1 cert_dname='CN=kafka-1'
+192.168.204.62 broker_id=2 cert_dname='CN=kafka-2'
+192.168.204.63 broker_id=3 cert_dname='CN=kafka-3'
 
 [all:vars]
 ansible_user=vagrant
@@ -9,4 +14,3 @@ ansible_private_key_file=~/.vagrant.d/insecure_private_key
 
 zookeeper_user=vagrant
 kafka_user=vagrant
-

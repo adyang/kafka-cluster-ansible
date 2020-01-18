@@ -8,7 +8,7 @@ readonly NUM_BROKERS=3
 readonly BROKER_TRUSTSTORE_PASS='password'
 readonly BROKER_KEYSTORE_PASS='password'
 readonly BROKER_KEY_PASS='password'
-readonly BROKER_IP_ADDRS=('192.168.204.51' '192.168.204.52' '192.168.204.53')
+readonly BROKER_IP_ADDRS=('192.168.204.61' '192.168.204.62' '192.168.204.63')
 readonly CLIENT_TRUSTSTORE_PASS='password'
 
 create_ca_certkey_pair() {
